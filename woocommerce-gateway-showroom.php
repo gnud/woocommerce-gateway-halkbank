@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: WooCommerce Offline Gateway
+ * Plugin Name: WooCommerce Showroom Gateway
  * Plugin URI: https://www.skyverge.com/?p=3343
- * Description: Clones the "Cheque" gateway to create another manual / offline payment method; can be used for testing as well.
- * Author: SkyVerge
- * Author URI: http://www.skyverge.com/
- * Version: 1.0.2
- * Text Domain: wc-gateway-offline
+ * Description: Clones the "Cheque" gateway to create another offline payment method - to be used for Showroom payments.
+ * Author: SkyVerge / 10°
+ * Author URI: https://www.10degrees.uk
+ * Version: 1.1.0
+ * Text Domain: wc-gateway-showroom
  * Domain Path: /i18n/languages/
  *
  * Copyright: (c) 2015-2016 SkyVerge, Inc. (info@skyverge.com) and WooCommerce
@@ -14,13 +14,13 @@
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
- * @package   WC-Gateway-Offline
- * @author    SkyVerge
+ * @package   WC-Gateway-Showroom
+ * @author    10°
  * @category  Admin
  * @copyright Copyright (c) 2015-2016, SkyVerge, Inc. and WooCommerce
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  *
- * This offline gateway forks the WooCommerce core "Cheque" payment gateway to create another offline payment method.
+ * This offline gateway forks the SkyVerge fork of the WooCommerce core "Cheque" payment gateway, to create another offline payment method.
  */
  
 defined( 'ABSPATH' ) or exit;
@@ -39,11 +39,11 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
  * @param array $gateways all available WC gateways
  * @return array $gateways all WC gateways + offline gateway
  */
-function wc_offline_add_to_gateways( $gateways ) {
-	$gateways[] = 'WC_Gateway_Offline';
+function wc_showroom_add_to_gateways( $gateways ) {
+	$gateways[] = 'WC_Gateway_Showroom';
 	return $gateways;
 }
-add_filter( 'woocommerce_payment_gateways', 'wc_offline_add_to_gateways' );
+add_filter( 'woocommerce_payment_gateways', 'wc_showroom_add_to_gateways' );
 
 
 /**
@@ -53,45 +53,45 @@ add_filter( 'woocommerce_payment_gateways', 'wc_offline_add_to_gateways' );
  * @param array $links all plugin links
  * @return array $links all plugin links + our custom links (i.e., "Settings")
  */
-function wc_offline_gateway_plugin_links( $links ) {
+function wc_showroom_gateway_plugin_links( $links ) {
 
 	$plugin_links = array(
-		'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=offline_gateway' ) . '">' . __( 'Configure', 'wc-gateway-offline' ) . '</a>'
+		'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=showroom_gateway' ) . '">' . __( 'Configure', 'wc-gateway-showroom' ) . '</a>'
 	);
 
 	return array_merge( $plugin_links, $links );
 }
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wc_offline_gateway_plugin_links' );
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wc_showroom_gateway_plugin_links' );
 
 
 /**
- * Offline Payment Gateway
+ * Showroom Payment Gateway
  *
- * Provides an Offline Payment Gateway; mainly for testing purposes.
+ * Provides a Showroom Payment Gateway.
  * We load it later to ensure WC is loaded first since we're extending it.
  *
- * @class 		WC_Gateway_Offline
+ * @class 		WC_Gateway_Showroom
  * @extends		WC_Payment_Gateway
  * @version		1.0.0
  * @package		WooCommerce/Classes/Payment
- * @author 		SkyVerge
+ * @author 		10°
  */
-add_action( 'plugins_loaded', 'wc_offline_gateway_init', 11 );
+add_action( 'plugins_loaded', 'wc_showroom_gateway_init', 11 );
 
-function wc_offline_gateway_init() {
+function wc_showroom_gateway_init() {
 
-	class WC_Gateway_Offline extends WC_Payment_Gateway {
+	class WC_Gateway_Showroom extends WC_Payment_Gateway {
 
 		/**
 		 * Constructor for the gateway.
 		 */
 		public function __construct() {
 	  
-			$this->id                 = 'offline_gateway';
-			$this->icon               = apply_filters('woocommerce_offline_icon', '');
+			$this->id                 = 'showroom_gateway';
+			$this->icon               = apply_filters('woocommerce_showroom_icon', '');
 			$this->has_fields         = false;
-			$this->method_title       = __( 'Offline', 'wc-gateway-offline' );
-			$this->method_description = __( 'Allows offline payments. Very handy if you use your cheque gateway for another payment method, and can help with testing. Orders are marked as "on-hold" when received.', 'wc-gateway-offline' );
+			$this->method_title       = __( 'Showroom', 'wc-gateway-showroom' );
+			$this->method_description = __( 'Allows Showroom payments. Orders are marked as "on-hold" when received.', 'wc-gateway-showroom' );
 		  
 			// Load the settings.
 			$this->init_form_fields();
@@ -116,35 +116,35 @@ function wc_offline_gateway_init() {
 		 */
 		public function init_form_fields() {
 	  
-			$this->form_fields = apply_filters( 'wc_offline_form_fields', array(
+			$this->form_fields = apply_filters( 'wc_showroom_form_fields', array(
 		  
 				'enabled' => array(
-					'title'   => __( 'Enable/Disable', 'wc-gateway-offline' ),
+					'title'   => __( 'Enable/Disable', 'wc-gateway-showroom' ),
 					'type'    => 'checkbox',
-					'label'   => __( 'Enable Offline Payment', 'wc-gateway-offline' ),
+					'label'   => __( 'Enable Showroom Payment', 'wc-gateway-showroom' ),
 					'default' => 'yes'
 				),
 				
 				'title' => array(
-					'title'       => __( 'Title', 'wc-gateway-offline' ),
+					'title'       => __( 'Title', 'wc-gateway-showroom' ),
 					'type'        => 'text',
-					'description' => __( 'This controls the title for the payment method the customer sees during checkout.', 'wc-gateway-offline' ),
-					'default'     => __( 'Offline Payment', 'wc-gateway-offline' ),
+					'description' => __( 'This controls the title for the payment method the customer sees during checkout.', 'wc-gateway-showroom' ),
+					'default'     => __( 'Showroom Payment', 'wc-gateway-showroom' ),
 					'desc_tip'    => true,
 				),
 				
 				'description' => array(
-					'title'       => __( 'Description', 'wc-gateway-offline' ),
+					'title'       => __( 'Description', 'wc-gateway-showroom' ),
 					'type'        => 'textarea',
-					'description' => __( 'Payment method description that the customer will see on your checkout.', 'wc-gateway-offline' ),
-					'default'     => __( 'Please remit payment to Store Name upon pickup or delivery.', 'wc-gateway-offline' ),
+					'description' => __( 'Payment method description that the customer will see on your checkout.', 'wc-gateway-showroom' ),
+					'default'     => __( 'Please remit payment to Store Name upon pickup or delivery.', 'wc-gateway-showroom' ),
 					'desc_tip'    => true,
 				),
 				
 				'instructions' => array(
-					'title'       => __( 'Instructions', 'wc-gateway-offline' ),
+					'title'       => __( 'Instructions', 'wc-gateway-showroom' ),
 					'type'        => 'textarea',
-					'description' => __( 'Instructions that will be added to the thank you page and emails.', 'wc-gateway-offline' ),
+					'description' => __( 'Instructions that will be added to the thank you page and emails.', 'wc-gateway-showroom' ),
 					'default'     => '',
 					'desc_tip'    => true,
 				),
@@ -189,7 +189,7 @@ function wc_offline_gateway_init() {
 			$order = wc_get_order( $order_id );
 			
 			// Mark as on-hold (we're awaiting the payment)
-			$order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
+			$order->update_status( 'on-hold', __( 'Awaiting showroom payment', 'wc-gateway-showroom' ) );
 			
 			// Reduce stock levels
 			$order->reduce_order_stock();
@@ -204,5 +204,5 @@ function wc_offline_gateway_init() {
 			);
 		}
 	
-  } // end \WC_Gateway_Offline class
+  } // end \WC_Gateway_Showroom class
 }
