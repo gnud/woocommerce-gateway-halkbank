@@ -3,7 +3,7 @@
  - Contributors: skyverge, beka.rice, mattrad
  - Tags: woocommerce, payment gateway, gateway, manual payment
  - Requires at least: 3.8
- - Tested up to: 4.3
+ - Tested up to: 4.7
  - Requires WooCommerce at least: 2.1
  - Tested WooCommerce up to: 2.4
  - Stable Tag: 1.1.0
